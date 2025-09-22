@@ -5,8 +5,15 @@ class StarTracker{
 public: 
   StarTracker(); //constructor to initialize startracker
 
-  struct attitude_data{ //Need to figure out what this will actually look like
-    int attitude; 
+  struct attitude_data{ //This is the information returned by the lost algorithm
+    uint8_t attitude_known; //1 if lost found a match, 0 if not indicating the rest of the data is junk
+    float attitude_ra; //Right ascension of the boresight vector
+    float attitude_de; //declination of the boresight vector
+    float attitude_roll; //roll about boresight access 
+    float attitude_i; //quaternion i vector
+    float attitude_j; //quaternion j vector
+    float attitude_k; //quaternion k vector
+    float attitude_real;//quaternion scaler
   };
 
   /*
