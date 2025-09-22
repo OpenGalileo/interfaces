@@ -60,6 +60,22 @@ public:
   */
   uint8_t *get_raw_image(); 
 
+  /*
+  access to raw centroid data after image processing
+  */
+  uint8_t *get_centroids();
+
+  /*
+  access to raw centroid data after image processing
+  */
+  uint8_t *get_centroids();
+
+  /*
+  access to raw star identificatino data
+  */
+  uint8_t *get_stars();
+
+
 private:
   uint8_t mode = 2; 
   int frequency; 
