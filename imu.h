@@ -1,7 +1,7 @@
 #ifndef IMU_H
 #define IMU_H
 
-// IMU sudocode
+// IMU pseudocode
 // IMU has accelerometer and gyroscope to read velocity, acceleration, and orientation
 
 class IMU {
