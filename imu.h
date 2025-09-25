@@ -8,6 +8,8 @@ class IMU {
 private: 
    
 public:
+    void init(bool enable);
+   //initialize any values we need upon startup, enable certain components if we want to choose, done with enable bool input.
     void CalibrateIMU();
     //call imu calibrate enable spin/any other setup the IMU needs
 
