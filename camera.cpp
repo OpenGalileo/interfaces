@@ -9,15 +9,6 @@ Camera::Camera(int exposure, int res_row, int res_col, int iso):
     
     //init camera, assign settings
 void Camera::init() {
-  int fd = open("/dev/video0", O_RDWR);
-  if (fd < 0) {
-    perror("Failed to open /dev/video0");
-
-  
-    memset(&img_fmt, 0, sizeof(img_fmt));
-    img_fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-    img_fmt.fmt.pix.width = _res_width;
-    img_fmt.fmt.pix.height = _res_width;
   }
 }
     //take picture, when SPI commands picture, this will be called to take image
