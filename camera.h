@@ -11,10 +11,10 @@
 // #include <string.h>
 // #include <linux/videodev2.h>
 
-#include <libcamera/libcamera.h>
-#include <libcamera/camera_manager.h>
-#include <libcamera/framebuffer_allocator.h>
-#include <libcamera/request.h>
+#include <libcamera/libcamera/libcamera.h>
+#include <libcamera/libcamera/camera_manager.h>
+#include <libcamera/libcamera/framebuffer_allocator.h>
+#include <libcamera/libcamera/request.h>
 
 #include <iostream>
 #include <fstream>
@@ -22,7 +22,9 @@
 #include <string>
 #include <vector>
 
-class Camera { //camera will be high def and a global shuttter
+using namespace libcamera;
+
+class StarCamera { //camera will be high def and a global shuttter
    
     private:     
     #define MAX_WIDTH 4056 
@@ -38,18 +40,20 @@ class Camera { //camera will be high def and a global shuttter
     void image_settings();
     
     uint16_t array[_res_height*_res_width]; //this will depend on camera
-    //planned camera widthx height and pixel count: 4056 x 3040
+    //planned camera width x height and pixel count: 4056 x 3040
     //planned 12.3 megapixels
 
     struct img_buffer {
       void *img_start;
       uint32_t length;
     };
+
+    CameraManager cam_man;
     
     
     public: 
     //constructor
-    Camera(int exposure, int res_width, int res_height, int iso);
+    StarCamera(int exposure, int res_width, int res_height, int iso);
     //iso is light sensitivity, exposure is time, resolution is max image size we can use 
     
     //init camera, assign settings
