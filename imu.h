@@ -228,7 +228,7 @@ void reset(OperModes op_mode);
 
 void raw_write(uint8_t reg, uint8_t* dataBuf); 
 
-void raw_read(uint8_t reg, uint8_t* dataBuf); 
+void raw_read(uint8_t reg, uint8_t* dataBuf, uint8_t regLength); 
 
 
 #endif
