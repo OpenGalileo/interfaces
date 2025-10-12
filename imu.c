@@ -8,6 +8,7 @@ I2C_HandleTypeDef* hi2c;
 
 
 /*
+Init function for setting up IMU into a given mode
 Version for using default addresss
 */
 int imu_init(OperModes op_mode, PowerModes pwr_mode, I2C_HandleTypeDef *handle){
@@ -24,13 +25,20 @@ int imu_init(OperModes op_mode, PowerModes pwr_mode, I2C_HandleTypeDef *handle){
     //Configure power mode 
 	HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_PWR_MODE_ADDR, 1, &pwr_mode, 1, 1000);
 
+    // Add a bit of a delay for the system to start waking up
+    HAL_Delay(50);
+
     //Configure operating mode
     HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_OPR_MODE_ADDR, 1, &op_mode, 1, 1000);
+
+    // Another delay to ensure sensors are waking up
+    HAL_Delay(50);
 
     return 0; 
 }
 
 /*
+Init function for setting up IMU into a given mode
 Version for using different address
 */
 int imu_init(OperModes op_mode, PowerModes pwr_mode, I2C_HandleTypeDef *handle, uint8_t alt_addr){
@@ -49,12 +57,22 @@ int imu_init(OperModes op_mode, PowerModes pwr_mode, I2C_HandleTypeDef *handle, 
     //Configure power mode 
 	HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_PWR_MODE_ADDR, 1, &pwr_mode, 1, 1000);
 
+    // Add a bit of a delay for the system to start waking up
+    HAL_Delay(50);
+
     //Configure operating mode
     HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_OPR_MODE_ADDR, 1, &op_mode, 1, 1000);
+
+    // Another delay to ensure sensors are waking up
+    HAL_Delay(50);
 
     return 0; 
 }
 
+/**
+ * Reads internal CPU temperature of the sensor.
+ * IMU must be in a running operational mode to report a non zero value
+ */
 uint8_t readTemperature(){
     uint8_t buf[10] = {0}; 
     HAL_I2C_Mem_Read(hi2c, DEV_ADDR,  BNO055_TEMP_ADDR, 1, &buf[0], 1, 1000);
@@ -62,6 +80,10 @@ uint8_t readTemperature(){
 }
 
 
+/**
+ * Reads the calculated Quaternion calculated by the IMU.
+ * IMU must be in a valid fusion operational mode that supports quaternion calculations
+ */
 void readQuaternion(float* quaternion){
     uint8_t buf[8] = {0};
     HAL_I2C_Mem_Read(hi2c, DEV_ADDR,  BNO055_QUATERNION_DATA_W_LSB_ADDR, 1, &buf[0], 8, 1000);
@@ -74,6 +96,10 @@ void readQuaternion(float* quaternion){
     quaternion[3] = (int16_t)(buf[6]|(buf[7]<<8))*scale; 
 }
 
+/**
+ * Reads the Euler angles calculated by the IMU.
+ * IMU must be in a valid fusion operation mode to generate non zero values.
+ */
 void readEuler(float* euler){
     uint8_t buf[6] = {0};
     HAL_I2C_Mem_Read(hi2c, DEV_ADDR,  BNO055_EULER_H_LSB_ADDR, 1, &buf[0], 6, 1000);
@@ -85,6 +111,10 @@ void readEuler(float* euler){
     euler[2] = (int16_t)(buf[4]|(buf[5]<<8))*scale; 
 }
 
+/**
+ * Reads the accelerometer from the IMU.
+ * IMU must be in an operational mode that activates the accelerometer to return non zero values.
+ */
 void readAccelerometer(float* accel){
     uint8_t buf[6] = {0};
     HAL_I2C_Mem_Read(hi2c, DEV_ADDR,  BNO055_ACCEL_DATA_X_MSB_ADDR, 1, &buf[0], 6, 1000);
@@ -96,6 +126,10 @@ void readAccelerometer(float* accel){
     accel[2] = (int16_t)(buf[4]|(buf[5]<<8))*scale; 
 }
 
+/**
+ * Reads the magnatometer from the IMU.
+ * IMU must be in an operational mode that activates the magnatometer to return non zero values.
+ */
 void readMagnetometer(float* mag){
     uint8_t buf[6] = {0};
     HAL_I2C_Mem_Read(hi2c, DEV_ADDR,  BNO055_MAG_DATA_X_LSB_ADDR, 1, &buf[0], 6, 1000);
@@ -107,6 +141,11 @@ void readMagnetometer(float* mag){
     mag[2] = (int16_t)(buf[4]|(buf[5]<<8))*scale; 
 }
 
+
+/**
+ * Reads the gyroscope from the IMU.
+ * IMU must be in an operational mode that activates the gyroscope to return non zero values.
+ */
 void readGyroscope(float* gyro){
     uint8_t buf[6] = {0};
     HAL_I2C_Mem_Read(hi2c, DEV_ADDR,  BNO055_GYRO_DATA_X_LSB_ADDR, 1, &buf[0], 6, 1000);
@@ -118,12 +157,72 @@ void readGyroscope(float* gyro){
     gyro[2] = (int16_t)(buf[4]|(buf[5]<<8))*scale; 
 }
 
-//just setting power mode to suspend
+
+/**
+ * Sends the command to the IMU to put it into a suspend state.
+ */
 void sleep(){
     HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_PWR_MODE_ADDR, 1, POWER_MODE_SUSPEND, 1, 1000);
 }
 
-//just setting power mode to normal
-void sleep(){
+
+/**
+ * Wakes the IMU up and puts it into a given operational mode.
+ * If no mode is given, IMU will be put into the 9DOF fusion operation mode.
+ */
+void wakeup(OperModes op_mode = OPERATION_MODE_NDOF){
+
+    // Set the power mode to normal
+	HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_PWR_MODE_ADDR, 1, POWER_MODE_NORMAL, 1, 1000);
+
+    // Wait a few ms for system to update
+    HAL_Delay(50);
+
+    // Configure operating mode
+    HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_OPR_MODE_ADDR, 1, &op_mode, 1, 1000);
+
+    // Wait a few more ms for the sensors to startup
+    HAL_Delay(50);
+}
+
+/**
+ * Performs a soft reset on the IMU.
+ * After reset, IMU will be put into passed in operation mode.
+ * If no mode is passed in, IMU will be put into 9DOF mode.
+ */
+void reset(OperModes op_mode = OPERATION_MODE_NDOF) {
+    // Send the command to reset the IMU
+    HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_SYS_TRIGGER_ADDR, 1, 0x20, 1, 1000);
+    // MAssive delay for full reboot
+    HAL_Delay(1000);
+    // Send the command for setting the power mode to normal
+    // NOTE: Might not be needed, but we don't want to risk it going into LOW_POWER
     HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_PWR_MODE_ADDR, 1, POWER_MODE_NORMAL, 1, 1000);
+    // Delay for the power mode change
+    HAL_Delay(100);
+    // Write the operational mode
+    HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_OPR_MODE_ADDR, 1, op_mode, 1, 1000);
+    // Delay for the sensors to start up
+    HAL_Delay(100);
+}
+
+/**
+ * Basic write function for writing to data registers on the IMU
+ */
+void raw_write(uint8_t reg, uint8_t* dataBuf) {
+    // Send the command
+    HAL_I2C_Mem_Write(hi2c, DEV_ADDR, reg, 1, dataBuf, sizeof(dataBuf), 1000);
+    // Add a 10 ms delay to prevent overrunning the IMU
+    HAL_Delay(10);
+}
+
+
+/**
+ * Basic function for reading register data from the IMU
+ */
+void raw_read(uint8_t reg, uint8_t* dataBuf, uint8_t regLength) {
+    // Send the command and get the response back
+    HAL_I2C_Mem_Read(hi2c, DEV_ADDR, reg, 1, dataBuf, regLength, 1000);
+    // Add a 10 ms delay to prevent overrunning the IMU
+    HAL_Delay(10);
 }

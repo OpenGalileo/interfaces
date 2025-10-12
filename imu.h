@@ -219,19 +219,16 @@ void readGyroscope(float* gyro);
 
 uint8_t readTemperature();
 
-// dont draw current
 void sleep();
-//dont pull imu to save power
 
-// wake to be idle/normal
-void wakeup();
-//start pulling imu
+void wakeup(OperModes op_mode);
 
-//TODO: write this
-void raw_write(); 
+void reset(OperModes op_mode);
 
-//TODO: write this 
-void raw_read(); 
+
+void raw_write(uint8_t reg, uint8_t* dataBuf); 
+
+void raw_read(uint8_t reg, uint8_t* dataBuf); 
 
 
 #endif
