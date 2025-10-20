@@ -39,7 +39,6 @@ class StarCamera { //camera will be high def and a global shuttter
     int _res_width; 
     int _res_height;
     int _iso;
-    int _shutterTime;
     std::string _outputFile;
   
     //picture settings
@@ -53,20 +52,20 @@ class StarCamera { //camera will be high def and a global shuttter
       uint32_t length;
     };
 
-    CameraManager cam_man;
-    std::shared_ptr<Camera> camera;
-    std::unique_ptr<CameraConfiguration> config;
+    // CameraManager cam_man;
+    // std::shared_ptr<Camera> camera;
+    // std::unique_ptr<CameraConfiguration> config;
 
-    std::unique_ptr<FrameBufferAllocator> allocator;
-    Stream* stream;
+    // std::unique_ptr<FrameBufferAllocator> allocator;
+    // Stream* stream;
 
-    FrameBuffer* fb;
+    // FrameBuffer* fb;
 
     
     
     public: 
     //constructor
-    StarCamera(int exposure, int res_width, int res_height, int iso, int shutterTime, std::string outputFile);
+    StarCamera(int exposure, int iso, int res_width, int res_height, std::string outputFile);
     //iso is light sensitivity, exposure is time, resolution is max image size we can use 
     
     //init camera, assign settings
@@ -75,6 +74,12 @@ class StarCamera { //camera will be high def and a global shuttter
     bool take_picture();
     //see pictire, when SPI wants raw image data, this will export raw image data 
     void print_picture();
-    //send picture
+    //change the camera exposure
+    void set_exposure(int new_exposure);
+    //change the ISO
+    void set_iso(int new_ISO);
+    //change image output name
+    void set_outputFilename(std::string newFilename);
+    
 };
 #endif

@@ -52,6 +52,7 @@ void StarCamera::init() {
       if (request->addBuffer(stream, fb) < 0) return false;
       if (camera->queueRequest(request) < 0) return false;
 
+      request->wa
     }
     //see pictire, when SPI wants raw image data, this will export raw image data 
     void print_picture();
