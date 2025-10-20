@@ -21,7 +21,9 @@ StarCamera::StarCamera(int exposure, int iso, int res_row, int res_col, std::str
           << " --shutter " << _exposure
           << " --immediate "
           << " --nopreview "
-          << " --timeout " << _exposure + 100;
+          << " --timeout " << _exposure + 100
+          << " --gain " << _iso / 100
+          << " --denoise off --awbgains 1,1";
 
           int ret = std::system(cmd.str().c_str());
           return ret == 0;
