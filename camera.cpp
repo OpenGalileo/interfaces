@@ -16,7 +16,7 @@ StarCamera::StarCamera(int exposure, int iso, int res_row, int res_col, std::str
     //take picture, when SPI commands picture, this will be called to take image
     bool StarCamera::take_picture() {
       std::ostringstream cmd;
-      cmd << "libcamera-still "
+      cmd << "rpicam-still "
           << "-o " << _outputFile
           << " --shutter " << _exposure
           << " --immediate "
