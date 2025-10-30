@@ -1,6 +1,9 @@
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
+#include <stdint.h>
+#include <array>
+
 class StarTracker{
 public: 
   StarTracker(); //constructor to initialize startracker
@@ -62,6 +65,13 @@ public:
   */
   void deep_sleep();
 
+  std::array<float,3> get_imu_all();
+  std::array<float,3> get_imu_euler();
+  std::array<float,3> get_imu_quaternion();
+  std::array<float,3> get_imu_accel();
+  std::array<float,3> get_imu_gyro();
+  std::array<float,3> get_imu_mag();
+
   /*
   Allows the satellite to access raw camera data if desired
   */
@@ -88,6 +98,6 @@ private:
   int frequency; 
   int imu_freq; 
   int camera_freq;
-}
+};
 
 #endif
