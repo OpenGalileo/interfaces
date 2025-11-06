@@ -3,15 +3,15 @@
 
 #include <stdint.h>
 #include <array>
+#include <stddef.h>
 
-
-enum class OP_MODE : uint8_t{
+enum : uint8_t{
     IDLE_PI_OFF, 
     IDLE_PI_ON,
     IMU_ONLY,
     PI_ONLY,
     FUSION
-}
+}OP_MODE;
 
 class StarTracker{
 public: 
@@ -34,8 +34,8 @@ public:
   */
   void set_mode(uint8_t mode); 
 
-  bool read_i2c(uint8_t *buf, size_t size, uint8_t addr);
-  bool write_i2c(uint8_t *buf, size_t size, uint8_t addr);
+  bool read_i2c(uint8_t *buf, std::size_t size, uint8_t addr);
+  bool write_i2c(uint8_t *buf, std::size_t size, uint8_t addr);
 
   /*
   Acquires one packet from the current mode

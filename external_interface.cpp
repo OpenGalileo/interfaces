@@ -3,7 +3,7 @@ TODO: Decide if we want to only open and close the file once
 */
 
 
-#include "external_interface.hpp"
+#include "external_interface.h"
 #include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
@@ -18,10 +18,14 @@ StarTracker::StarTracker(){
 
 //}
 void StarTracker::set_mode(uint8_t mode){
-    uint8_t buf[1] = {mode};
-    bool ret = StarTracker::write_i2c(buf, 1, 0x00);
+    uint8_t buf[2] = {0x00, mode};
+    bool ret = StarTracker::write_i2c(buf, 2, 0x00);
     if(!ret){
         std::cerr << "Failed mode write\n";
+	std::cerr << "Failed " << unsigned(mode) << "\n";
+    }
+    if(ret){
+	std::cerr << "Set mode " << unsigned(mode) << "\n";
     }
 }
 
@@ -50,10 +54,17 @@ bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
         std::cerr << "Failed to open I2C device\n";
         return false;
     }
-    if (ioctl(file, I2C_SLAVE, addr) < 0) {
+    if (ioctl(file, I2C_SLAVE, 0x18) < 0) {
         std::cerr << "Failed to set I2C address\n";
         close(file);
         return false;
+    }
+    uint8_t buf_temp[1] = {addr};
+    ssize_t reg_write = write(file, buf_temp,  1);
+    std::cerr << "buf_temp = " << unsigned(buf_temp[0]) << "\n";
+    if(reg_write <0){
+	close(file);
+	return false;
     }
     ssize_t byteRead = read(file,buf, size);
     if(byteRead < 0){
@@ -71,11 +82,18 @@ bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
         std::cerr << "Failed to open I2C device\n";
         return false;
     }
-    if (ioctl(file, I2C_SLAVE, addr) < 0) {
+    if (ioctl(file, I2C_SLAVE, 0x18) < 0) {
         std::cerr << "Failed to set I2C address\n";
         close(file);
         return false;
     }
+    //uint8_t buf_temp[2] = {addr, buf[0]};
+   // ssize_t reg_write= write(file, buf_temp, 1);
+   // std::cerr << "buf_temp = " << unsigned(buf_temp[0]) << "\n";
+   // if(reg_write<0){
+//	close(file);
+//	return false;
+ //   }
     ssize_t byteWrite = write(file,buf, size);
     if(byteWrite < 0){
         close(file);
