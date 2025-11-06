@@ -4,6 +4,15 @@
 #include <stdint.h>
 #include <array>
 
+
+enum class OP_MODE : uint8_t{
+    IDLE_PI_OFF, 
+    IDLE_PI_ON,
+    IMU_ONLY,
+    PI_ONLY,
+    FUSION
+}
+
 class StarTracker{
 public: 
   StarTracker(); //constructor to initialize startracker
@@ -24,6 +33,9 @@ public:
   Default is 2, combined data
   */
   void set_mode(uint8_t mode); 
+
+  bool read_i2c(uint8_t *buf, size_t size, uint8_t addr);
+  bool write_i2c(uint8_t *buf, size_t size, uint8_t addr);
 
   /*
   Acquires one packet from the current mode
@@ -76,11 +88,6 @@ public:
   Allows the satellite to access raw camera data if desired
   */
   uint8_t *get_raw_image(); 
-
-  /*
-  access to raw centroid data after image processing
-  */
-  uint8_t *get_centroids();
 
   /*
   access to raw centroid data after image processing
