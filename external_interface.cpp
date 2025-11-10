@@ -18,8 +18,11 @@ StarTracker::StarTracker(){
 
 //}
 void StarTracker::set_mode(uint8_t mode){
-    uint8_t buf[2] = {0x00, mode};
-    bool ret = StarTracker::write_i2c(buf, 2, 0x00);
+    uint8_t buf[2]= {0x00, mode};
+    //buf[1] = 0x00;
+    bool ret = StarTracker::write_i2c(buf, 1, 0x00);
+    buf[1] = mode;
+    bool ret2 = StarTracker::write_i2c(buf, 1, 0x00);
     if(!ret){
         std::cerr << "Failed mode write\n";
 	std::cerr << "Failed " << unsigned(mode) << "\n";
