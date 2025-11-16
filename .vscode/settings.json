@@ -111,6 +111,11 @@
     "cinttypes": "cpp",
     "typeinfo": "cpp",
     "sstream": "cpp",
-    "stdint.h": "c"
+    "stdint.h": "c",
+    "cstring": "cpp",
+    "iomanip": "cpp",
+    "semaphore": "cpp",
+    "stop_token": "cpp",
+    "thread": "cpp"
   }
 }
