@@ -20,15 +20,15 @@ StarTracker::StarTracker(){
 void StarTracker::set_mode(uint8_t mode){
     uint8_t buf[2]= {0x00, mode};
     //buf[1] = 0x00;
-    bool ret = StarTracker::write_i2c(buf, 1, 0x00);
-    buf[1] = mode;
-    bool ret2 = StarTracker::write_i2c(buf, 1, 0x00);
+    bool ret = StarTracker::write_i2c(buf, 2, 0x00);
+    //buf[1] = mode;
+    //bool ret2 = StarTracker::write_i2c(buf, 1, 0x00);
     if(!ret){
         std::cerr << "Failed mode write\n";
-	std::cerr << "Failed " << unsigned(mode) << "\n";
+        std::cerr << "Failed " << unsigned(mode) << "\n";
     }
     if(ret){
-	std::cerr << "Set mode " << unsigned(mode) << "\n";
+        std::cerr << "Set mode " << unsigned(mode) << "\n";
     }
 }
 
@@ -40,16 +40,14 @@ std::array<float,3>  StarTracker::get_imu_euler(){
         return {0.0f, 0.0f, 0.0f};
     }
     std::array<float,3> imu_euler = {0.0f, 0.0f, 0.0f};
-	int16_t temp = buf[0] | (int16_t)buf[1]<<8;
+        int16_t temp = buf[0] | (int16_t)buf[1]<<8;
     imu_euler[0] = (float)(temp/16.0f);
-	temp = buf[2] | (int16_t)buf[3]<<8;
+        temp = buf[2] | (int16_t)buf[3]<<8;
     imu_euler[1] = (float)(temp/16.0f);
-	temp = buf[4] | (int16_t)buf[5]<<8;
+        temp = buf[4] | (int16_t)buf[5]<<8;
     imu_euler[2] = (float)(temp/16.0f);
     return imu_euler;
 }
-
-
 bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
     const char* device = "/dev/i2c-1";
     int file = open(device,O_RDWR);
@@ -66,8 +64,8 @@ bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
     ssize_t reg_write = write(file, buf_temp,  1);
     std::cerr << "buf_temp = " << unsigned(buf_temp[0]) << "\n";
     if(reg_write <0){
-	close(file);
-	return false;
+        close(file);
+        return false;
     }
     ssize_t byteRead = read(file,buf, size);
     if(byteRead < 0){
@@ -94,11 +92,12 @@ bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
    // ssize_t reg_write= write(file, buf_temp, 1);
    // std::cerr << "buf_temp = " << unsigned(buf_temp[0]) << "\n";
    // if(reg_write<0){
-//	close(file);
-//	return false;
+//      close(file);
+//      return false;
  //   }
-    ssize_t byteWrite = write(file,buf, size);
-    if(byteWrite < 0){
+    ssize_t addrWrite = write(file, buf, 1);
+    ssize_t byteWrite = write(file,&buf[1], size-1);
+    if(byteWrite < 0 || addrWrite<0){
         close(file);
         return false;
     }
@@ -106,3 +105,5 @@ bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
     return true;
 
 }
+
+
