@@ -85,7 +85,7 @@ std::array<float,3>  StarTracker::get_imu_gyro(){
     return imu_gyro;
 }
 
-std::array<float,3>  StarTracker::imu_mag(){
+std::array<float,3>  StarTracker::get_imu_mag(){
     uint8_t buf[6];
     bool ret = StarTracker::read_i2c(buf, 6, 0x18);
     if(!ret){
