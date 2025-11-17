@@ -1,4 +1,4 @@
-  GNU nano 7.2                                                                                                  external_interface.h                                                                                                           
+                                                                                                 external_interface.h                                                                                                           
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
