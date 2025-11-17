@@ -1,3 +1,4 @@
+  GNU nano 7.2                                                                                                  external_interface.h                                                                                                           
 #ifndef INTERFACE_H
 #define INTERFACE_H
 
@@ -72,7 +73,7 @@ public:
   */
   void stop_stream();
 
-  /*
+ /*
   Tells the star tracker to not consume any power other than the bare minimum to maintain communications
   */
   void deep_sleep();
@@ -108,3 +109,5 @@ private:
 };
 
 #endif
+
+
