@@ -78,12 +78,21 @@ public:
   */
   void deep_sleep();
 
-  std::array<float,3> get_imu_all();
+
+  //Would probably make more sense to return a data structure so the user can imu.gyro_x or somethign instead of indexing an array
+  std::array<float,16> get_imu_all(); 
   std::array<float,3> get_imu_euler();
-  std::array<float,3> get_imu_quaternion();
+  std::array<float,4> get_imu_quaternion();
   std::array<float,3> get_imu_accel();
   std::array<float,3> get_imu_gyro();
   std::array<float,3> get_imu_mag();
+
+  //LOST stuff
+  float get_lost_ra(); 
+  float get_lost_dec(); 
+  float get_lost_roll();
+  std::array<float,3> get_lost_all();
+
 
   /*
   Allows the satellite to access raw camera data if desired
