@@ -181,7 +181,7 @@ std::array<float,3>  StarTracker::get_lost_all(){
     return lost_all; 
 }
 
-std::array<float, 3> StarTracker::get_lost_all(){
+std::array<float, 3> StarTracker::get_lost_all_test(){
     uint8_t buf[13];
 
     bool ret = StarTracker::read_i2c(buf, sizeof(buf), 0x30);
