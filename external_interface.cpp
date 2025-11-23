@@ -1,5 +1,6 @@
 /*
 TODO: Decide if we want to only open and close the file once
+TODO: Fix imu functions to read floats
 */
 
 
@@ -180,6 +181,22 @@ std::array<float,3>  StarTracker::get_lost_all(){
     return lost_all; 
 }
 
+std::array<float, 3> StarTracker::get_lost_all(){
+    uint8_t buf[13];
+
+    bool ret = StarTracker::read_i2c(buf, sizeof(buf), 0x30);
+    if (!ret) {
+        std::cerr << "Failed lost roll read\n";
+        return {};
+    }
+
+    std::array<float,3> lost_all = {0.0f, 0.0f, 0.0f};
+    memcpy(&lost_all[0], &buf[1], sizeof(float));   // copy raw bytes into float
+    memcpy(&lost_all[1], &buf[5], sizeof(float));  
+    memcpy(&lost_all[2], &buf[9], sizeof(float));  
+
+    return lost_all;
+}
 bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
     const char* device = "/dev/i2c-1";
     int file = open(device,O_RDWR);
