@@ -116,6 +116,17 @@
     "iomanip": "cpp",
     "semaphore": "cpp",
     "stop_token": "cpp",
-    "thread": "cpp"
+    "thread": "cpp",
+    "any": "cpp",
+    "bitset": "cpp",
+    "charconv": "cpp",
+    "codecvt": "cpp",
+    "complex": "cpp",
+    "condition_variable": "cpp",
+    "forward_list": "cpp",
+    "optional": "cpp",
+    "regex": "cpp",
+    "mutex": "cpp",
+    "variant": "cpp"
   }
 }
