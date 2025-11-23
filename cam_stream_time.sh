@@ -1,4 +1,5 @@
 #!/bin/bash
+# Usage: ./cam_stream_time.sh EXPOSURE (in ms) GAIN (1-16) filename.png (all optional)
 EXPOSURE_MS=${1:-500} # Exposure in ms
 GAIN=${2:-4} #1-16
 OUTPUT_FILE=${3:-img.png}
