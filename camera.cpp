@@ -1,8 +1,8 @@
 #include "camera.h"
 
     
-StarCamera::StarCamera(int exposure, int iso, int res_row, int res_col, std::string outputFile):
-      _exposure(exposure), _iso(iso), _res_width(res_row), _res_height(res_col), _outputFile(outputFile) {
+StarCamera::StarCamera(camera_settings* settings):
+      _exposure(settings->exposure), _gain(settings->gain), _res_width(settings->width), _res_height(settings->height), _outputFile(settings->filename) {
         // Values set. Anything else?
       }
     //iso is light sensitivity, exposure is time, resolution is max image size we can use 
@@ -22,8 +22,9 @@ StarCamera::StarCamera(int exposure, int iso, int res_row, int res_col, std::str
           << " --immediate "
           << " --nopreview "
           << " --timeout " << _exposure + 100
-          << " --gain " << _iso / 100
-          << " --denoise off --awbgains 1,1";
+          << " --gain " << _gain
+          << " --width " << _res_width
+          << " --height " << _res_height;
 
           int ret = std::system(cmd.str().c_str());
           return ret == 0;
@@ -33,8 +34,8 @@ StarCamera::StarCamera(int exposure, int iso, int res_row, int res_col, std::str
 
     }
 
-    void StarCamera::set_iso(int new_ISO) {
-      _iso = new_ISO;
+    void StarCamera::set_gain(int new_gain) {
+      _gain = new_gain;
     }
 
     void StarCamera::set_exposure(int new_exposure) {

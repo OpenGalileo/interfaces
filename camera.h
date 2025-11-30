@@ -28,6 +28,15 @@
 
 // using namespace libcamera;
 
+typedef struct camera_settings {
+  int width;
+  int height;
+  int gain;
+  int exposure;
+  std::string filename;
+};
+
+
 class StarCamera { //camera will be high def and a global shuttter
    
     private:     
@@ -38,7 +47,7 @@ class StarCamera { //camera will be high def and a global shuttter
     int _exposure; //time in ms or us that it would take for picture
     int _res_width; 
     int _res_height;
-    int _iso;
+    int _gain;
     std::string _outputFile;
   
     //picture settings
@@ -65,8 +74,8 @@ class StarCamera { //camera will be high def and a global shuttter
     
     public: 
     //constructor
-    StarCamera(int exposure, int iso, int res_width, int res_height, std::string outputFile);
-    //iso is light sensitivity, exposure is time, resolution is max image size we can use 
+    StarCamera(camera_settings* settings);
+    //gain is light sensitivity 1-16, exposure is time in microseconds, resolution is max image size we can use 
     
     //init camera, assign settings
     void init();
@@ -77,7 +86,7 @@ class StarCamera { //camera will be high def and a global shuttter
     //change the camera exposure
     void set_exposure(int new_exposure);
     //change the ISO
-    void set_iso(int new_ISO);
+    void set_gain(int new_gain);
     //change image output name
     void set_outputFilename(std::string newFilename);
     
