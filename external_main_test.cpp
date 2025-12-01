@@ -1,3 +1,4 @@
+
 #include "external_interface.h"
 #include <iostream>
 #include <unistd.h>
@@ -7,17 +8,13 @@
 
 int main(){
     StarTracker star; 
-    uint8_t mode = IDLE_PI_OFF; 
+    uint8_t mode = PI_ONLY;
+    star.set_mode(mode);
+    star.set_mode(mode);
+    //star.set_mode(mode);  
     while(1){
-        star.set_mode(mode);
-        if(mode >=4){
-            mode = 0;
-        }
-        else{
-            mode++;
-        }
-        std::array<float,3> imu_euler = star.get_imu_euler();
-        std::cout<<imu_euler[0]<<" "<<imu_euler[1]<<" "<<imu_euler[2]<<std::endl; 
-        sleep(3);
+        std::array<float,3> lost = star.get_lost_all_test();
+        std::cout<<lost[0]<<" "<<lost[1]<<" "<<lost[2]<<std::endl; 
+        sleep(5);
     }
 }
