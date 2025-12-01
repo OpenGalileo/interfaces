@@ -91,7 +91,7 @@ public:
   float get_lost_dec(); 
   float get_lost_roll();
   std::array<float,3> get_lost_all();
-std::array<float, 3> get_lost_all_test()
+std::array<float, 3> get_lost_all_test();
 
 
   /*
@@ -118,5 +118,3 @@ private:
 };
 
 #endif
-
-
