@@ -10,6 +10,7 @@ TODO: Fix imu functions to read floats
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
+#include <cstring>
 
 StarTracker::StarTracker(){
 
@@ -21,6 +22,7 @@ StarTracker::StarTracker(){
 void StarTracker::set_mode(uint8_t mode){
     uint8_t buf[2]= {0x00, mode};
     //buf[1] = 0x00;
+    std::cout<<mode<<std::endl;
     bool ret = StarTracker::write_i2c(buf, 2, 0x00);
     //buf[1] = mode;
     //bool ret2 = StarTracker::write_i2c(buf, 1, 0x00);
@@ -136,7 +138,6 @@ std::array<float,16>  StarTracker::get_imu_all(){
     return imu_all;
 }
 
-
 float StarTracker::get_lost_ra(){
     uint8_t buf[2];
     bool ret = StarTracker::read_i2c(buf, 2, 0x30);
@@ -190,13 +191,18 @@ std::array<float, 3> StarTracker::get_lost_all_test(){
         return {};
     }
 
+    for (int i = 0; i <13; i++){
+        std::cout<< std::hex << uint8_t(buf[i])<<std::endl;
+    }
+
     std::array<float,3> lost_all = {0.0f, 0.0f, 0.0f};
-    memcpy(&lost_all[0], &buf[1], sizeof(float));   // copy raw bytes into float
-    memcpy(&lost_all[1], &buf[5], sizeof(float));  
-    memcpy(&lost_all[2], &buf[9], sizeof(float));  
+    memcpy(&lost_all[0], buf+1, 4);   // copy raw bytes into float
+    memcpy(&lost_all[1], buf+5, 4);  
+    memcpy(&lost_all[2], buf+9, 4);  
 
     return lost_all;
 }
+
 bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
     const char* device = "/dev/i2c-1";
     int file = open(device,O_RDWR);
@@ -204,7 +210,7 @@ bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
         std::cerr << "Failed to open I2C device\n";
         return false;
     }
-    if (ioctl(file, I2C_SLAVE, 0x18) < 0) {
+    if (ioctl(file, I2C_SLAVE, 0x30) < 0) {
         std::cerr << "Failed to set I2C address\n";
         close(file);
         return false;
@@ -215,15 +221,36 @@ bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
     if(reg_write <0){
         close(file);
         return false;
-    }
+   }
     ssize_t byteRead = read(file,buf, size);
-    if(byteRead < 0){
-        close(file);
+   if(byteRead < 0){
+       close(file);
         return false;
     }
     close(file);
-    return true;
+   return true;
+//struct i2c_msg msgs[2]; 
+//uint8_t reg_addr[1] = {addr}; 
+//msgs[0].addr = 0x30;
+// msgs[0].flags = 0; 
+//msgs[0].len = 1; 
+//msgs[0].buf = reg_addr; 
+
+//msgs[1].addr = 0x30;
+// msgs[1].flags = I2C_M_RD; 
+//msgs[0].len = size; 
+//msgs[0].buf = buf;
+
+//struct i2c_rdwr_ioctl_data msgset = {.msgs = msgs, .nmsgs = 2};
+//if(ioctl(file, I2C_RDWR, &msgset) <0){ 
+  //  std::cerr <<"failed i2c write\n"; 
+    //close(file); 
+//    return false; 
+//}
+//close(file); 
+//return true; 
 }
+
 
 bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
     const char* device = "/dev/i2c-1";
@@ -232,7 +259,7 @@ bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
         std::cerr << "Failed to open I2C device\n";
         return false;
     }
-    if (ioctl(file, I2C_SLAVE, 0x18) < 0) {
+    if (ioctl(file, I2C_SLAVE, 0x30) < 0) {
         std::cerr << "Failed to set I2C address\n";
         close(file);
         return false;
@@ -254,5 +281,6 @@ bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
     return true;
 
 }
+
 
 
