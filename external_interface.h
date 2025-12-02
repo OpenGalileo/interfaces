@@ -5,13 +5,13 @@
 #include <array>
 #include <stddef.h>
 
-enum : uint8_t{
+typedef enum : uint8_t{
     IDLE_PI_OFF = 0x00, 
     IDLE_PI_ON = 0x01,
     IMU_MEASURE = 0x02,
     LOST_MEASURE = 0x03,
     FUSION_MEASURE = 0x04
-}OP_MODE;
+} OP_MODE;
 
 class StarTracker{
 public: 
@@ -91,7 +91,7 @@ public:
   float get_lost_dec(); 
   float get_lost_roll();
   std::array<float,3> get_lost_all();
-std::array<float, 3> get_lost_all_test();
+  std::array<float, 3> get_lost_all_test();
 
 
   /*
