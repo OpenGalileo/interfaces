@@ -6,11 +6,11 @@
 #include <stddef.h>
 
 enum : uint8_t{
-    IDLE_PI_OFF, 
-    IDLE_PI_ON,
-    IMU_ONLY,
-    PI_ONLY,
-    FUSION
+    IDLE_PI_OFF = 0x00, 
+    IDLE_PI_ON = 0x01,
+    IMU_MEASURE = 0x02,
+    LOST_MEASURE = 0x03,
+    FUSION_MEASURE = 0x04
 }OP_MODE;
 
 class StarTracker{
