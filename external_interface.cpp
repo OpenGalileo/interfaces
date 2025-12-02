@@ -10,6 +10,7 @@ TODO: Fix imu functions to read floats
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h>
+#include <cstring>
 
 StarTracker::StarTracker(){
 
