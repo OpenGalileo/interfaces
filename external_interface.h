@@ -37,6 +37,12 @@ public:
   bool read_i2c(uint8_t *buf, std::size_t size, uint8_t addr);
   bool write_i2c(uint8_t *buf, std::size_t size, uint8_t addr);
 
+
+  void imu_frequency(float freq);
+
+void lost_frequency(float freq);
+
+uint8_t get_imu_euler();
   /*
   Acquires one packet from the current mode
 

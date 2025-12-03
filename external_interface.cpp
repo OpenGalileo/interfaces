@@ -16,16 +16,9 @@ StarTracker::StarTracker(){
 
 }
 
-//StarTracker::~StarTracker(){
-
-//}
 void StarTracker::set_mode(uint8_t mode){
     uint8_t buf[2]= {0x00, mode};
-    //buf[1] = 0x00;
-    std::cout<<mode<<std::endl;
     bool ret = StarTracker::write_i2c(buf, 2, 0x00);
-    //buf[1] = mode;
-    //bool ret2 = StarTracker::write_i2c(buf, 1, 0x00);
     if(!ret){
         std::cerr << "Failed mode write\n";
         std::cerr << "Failed " << unsigned(mode) << "\n";
@@ -33,6 +26,42 @@ void StarTracker::set_mode(uint8_t mode){
     if(ret){
         std::cerr << "Set mode " << unsigned(mode) << "\n";
     }
+}
+
+void StarTracker::imu_frequency(float freq){ //frequency should be between 0.154 and 100 Hz
+    uint8_t buf[5] = {0x50, 0, 0, 0, 0};
+    std::memcpy(&buf[1], &freq, sizeof(float));
+    bool ret = StarTracker::write_i2c(buf, 5, 0x50);
+    if(!ret){
+        std::cerr << "Failed imu freq write\n";
+        std::cerr << "Failed " << freq << "\n";
+    }
+    if(ret){
+        std::cerr << "Set imu freq " << freq << "\n";
+    }
+}
+
+void StarTracker::lost_frequency(float freq){ //frequency should be between 0 and 0.5 Hz
+    uint8_t buf[5] = {0x54, 0, 0, 0, 0};
+    std::memcpy(&buf[1], &freq, sizeof(float));
+    bool ret = StarTracker::write_i2c(buf, 5, 0x54);
+    if(!ret){
+        std::cerr << "Failed lost freq write\n";
+        std::cerr << "Failed " << freq << "\n";
+    }
+    if(ret){
+        std::cerr << "Set lost freq " << freq << "\n";
+    }
+}
+
+uint8_t StarTracker::get_imu_euler(){
+    uint8_t buf;
+    bool ret = StarTracker::read_i2c(buf, 1, 0x01);
+    if(!ret){
+        std::cerr << "Failed temp read\n";
+        return 0;
+    }
+    return buf;
 }
 
 std::array<float,3>  StarTracker::get_imu_euler(){
@@ -221,40 +250,20 @@ bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
     if(reg_write <0){
         close(file);
         return false;
-   }
+    }
     ssize_t byteRead = read(file,buf, size);
    if(byteRead < 0){
        close(file);
         return false;
     }
     close(file);
-   return true;
-//struct i2c_msg msgs[2]; 
-//uint8_t reg_addr[1] = {addr}; 
-//msgs[0].addr = 0x30;
-// msgs[0].flags = 0; 
-//msgs[0].len = 1; 
-//msgs[0].buf = reg_addr; 
-
-//msgs[1].addr = 0x30;
-// msgs[1].flags = I2C_M_RD; 
-//msgs[0].len = size; 
-//msgs[0].buf = buf;
-
-//struct i2c_rdwr_ioctl_data msgset = {.msgs = msgs, .nmsgs = 2};
-//if(ioctl(file, I2C_RDWR, &msgset) <0){ 
-  //  std::cerr <<"failed i2c write\n"; 
-    //close(file); 
-//    return false; 
-//}
-//close(file); 
-//return true; 
+    return true;
 }
 
 
 bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
     const char* device = "/dev/i2c-1";
-    int file = open(device, O_WRONLY); //may need to change this to rdwr
+    int file = open(device, O_WRONLY);
     if (file < 0) {
         std::cerr << "Failed to open I2C device\n";
         return false;
@@ -264,16 +273,8 @@ bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
         close(file);
         return false;
     }
-    //uint8_t buf_temp[2] = {addr, buf[0]};
-   // ssize_t reg_write= write(file, buf_temp, 1);
-   // std::cerr << "buf_temp = " << unsigned(buf_temp[0]) << "\n";
-   // if(reg_write<0){
-//      close(file);
-//      return false;
- //   }
-    ssize_t addrWrite = write(file, buf, 1);
-    ssize_t byteWrite = write(file,&buf[1], size-1);
-    if(byteWrite < 0 || addrWrite<0){
+    ssize_t byteWrite = write(file, buf, size);
+    if(addrWrite<0){
         close(file);
         return false;
     }
