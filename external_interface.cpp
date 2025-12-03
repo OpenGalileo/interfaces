@@ -52,10 +52,10 @@ void StarTracker::lost_frequency(float freq){ //frequency should be between 0 an
     if(ret){
         std::cerr << "Set lost freq " << freq << "\n";
     }
-}
+} 
 
-uint8_t StarTracker::get_imu_euler(){
-    uint8_t buf;
+uint8_t StarTracker::get_imu_temp(){
+    uint8_t buf[1];
     bool ret = StarTracker::read_i2c(buf, 1, 0x01);
     if(!ret){
         std::cerr << "Failed temp read\n";

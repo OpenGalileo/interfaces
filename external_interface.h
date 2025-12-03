@@ -42,7 +42,7 @@ public:
 
 void lost_frequency(float freq);
 
-uint8_t get_imu_euler();
+uint8_t get_imu_temp();
   /*
   Acquires one packet from the current mode
 
