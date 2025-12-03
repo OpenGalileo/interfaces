@@ -94,7 +94,7 @@ uint8_t get_imu_temp();
   std::array<float,3> get_imu_mag();
 
   //LOST stuff
-  uint8_t StarTracker::get_lost_valid();
+  uint8_t get_lost_valid();
   float get_lost_ra(); 
   float get_lost_dec(); 
   float get_lost_roll();
