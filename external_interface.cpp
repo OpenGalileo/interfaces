@@ -181,67 +181,124 @@ std::array<float,16>  StarTracker::get_imu_all(){
     return imu_all;
 }
 
+uint8_t StarTracker::get_lost_valid(){
+    uint8_t buf[1];
+    bool ret = StarTracker::read_i2c(buf, 1, 0x30);
+    if(!ret){
+        std::cerr << "Failed lost valid read\n";
+        return 0.0f;
+    }
+    return buf[0];
+}
+
 float StarTracker::get_lost_ra(){
-    uint8_t buf[2];
-    bool ret = StarTracker::read_i2c(buf, 2, 0x30);
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x31);
     if(!ret){
         std::cerr << "Failed lost ra read\n";
         return 0.0f;
     }
-    float ra = ((float)(buf[0]|buf[1]<<8))/10000.0f; 
-    return ra;
+    float ra[1]; 
+    memcpy(&ra[0], buf, 4);
+    return ra[0];
 }
 
 
 float StarTracker::get_lost_dec(){
-    uint8_t buf[2];
-    bool ret = StarTracker::read_i2c(buf, 2, 0x32);
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x35);
     if(!ret){
         std::cerr << "Failed lost dec read\n";
         return 0.0f;
     }
-    float dec = ((float)(buf[0]|buf[1]<<8))/10000.0f; 
-    return dec;
+    float dec[1]; 
+    memcpy(&dec[0], buf, 4);
+    return dec[0];
 }
 
 
 float StarTracker::get_lost_roll(){
-    uint8_t buf[2];
-    bool ret = StarTracker::read_i2c(buf, 2, 0x34);
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x39);
     if(!ret){
         std::cerr << "Failed lost roll read\n";
         return 0.0f;
     }
-    float roll = ((float)(buf[0]|buf[1]<<8))/10000.0f; 
-    return roll;
+    float roll[1]; 
+    memcpy(&roll[0], buf, 4);
+    return roll[0];
+}
+
+float StarTracker::get_lost_i(){
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x3D);
+    if(!ret){
+        std::cerr << "Failed lost i read\n";
+        return 0.0f;
+    }
+    float i[1]; 
+    memcpy(&i[0], buf, 4);
+    return i[0];
+}
+
+float StarTracker::get_lost_j(){
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x41);
+    if(!ret){
+        std::cerr << "Failed lost j read\n";
+        return 0.0f;
+    }
+    float j[1]; 
+    memcpy(&j[0], buf, 4);
+    return j[0];
+}
+
+float StarTracker::get_lost_k(){
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x45);
+    if(!ret){
+        std::cerr << "Failed lost k read\n";
+        return 0.0f;
+    }
+    float k[1]; 
+    memcpy(&k[0], buf, 4);
+    return k[0];
+}
+
+float StarTracker::get_lost_real(){
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x49);
+    if(!ret){
+        std::cerr << "Failed lost real read\n";
+        return 0.0f;
+    }
+    float real[1]; 
+    memcpy(&real[0], buf, 4);
+    return real[0];
 }
 
 
-std::array<float,3>  StarTracker::get_lost_all(){
-    std::array<float,3> lost_all = {0.0f};
-    lost_all[0] = StarTracker::get_lost_ra();
-    lost_all[1] = StarTracker::get_lost_dec();
-    lost_all[2] = StarTracker::get_lost_roll();
-    return lost_all; 
-}
-
-std::array<float, 3> StarTracker::get_lost_all_test(){
-    uint8_t buf[13];
+std::array<float, 7> StarTracker::get_lost_all(){
+    uint8_t buf[29];
 
     bool ret = StarTracker::read_i2c(buf, sizeof(buf), 0x30);
     if (!ret) {
-        std::cerr << "Failed lost roll read\n";
+        std::cerr << "Failed lost all read\n";
+        return {};
+    }
+    if(buf[0] != 1){
+        std::cerr << "Lost all read, data not valid\n";
         return {};
     }
 
-    for (int i = 0; i <13; i++){
-        std::cout<< std::hex << uint8_t(buf[i])<<std::endl;
-    }
-
-    std::array<float,3> lost_all = {0.0f, 0.0f, 0.0f};
+    std::array<float,7> lost_all = {0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
     memcpy(&lost_all[0], buf+1, 4);   // copy raw bytes into float
     memcpy(&lost_all[1], buf+5, 4);  
     memcpy(&lost_all[2], buf+9, 4);  
+    memcpy(&lost_all[3], buf+13, 4);  
+    memcpy(&lost_all[4], buf+17, 4);  
+    memcpy(&lost_all[5], buf+21, 4);  
+    memcpy(&lost_all[6], buf+25, 4);  
 
     return lost_all;
 }
