@@ -54,6 +54,20 @@ void StarTracker::lost_frequency(float freq){ //frequency should be between 0 an
     }
 } 
 
+
+void StarTracker::select_image(uint8_t image_num){ //frequency should be between 0 and 0.5 Hz
+    uint8_t buf[2] = {0x02, image_num};
+    bool ret = StarTracker::write_i2c(buf, 2, 0x02);
+    if(!ret){
+        std::cerr << "Failed image select\n";
+        std::cerr << "Failed " << image_num << "\n";
+    }
+    if(ret){
+        std::cerr << "Selected image " << image_num << "\n";
+    }
+} 
+
+
 uint8_t StarTracker::get_imu_temp(){
     uint8_t buf[1];
     bool ret = StarTracker::read_i2c(buf, 1, 0x01);

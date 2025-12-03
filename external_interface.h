@@ -41,6 +41,7 @@ public:
   void imu_frequency(float freq);
 
 void lost_frequency(float freq);
+void select_image(uint8_t image_num);
 
 uint8_t get_imu_temp();
   /*
