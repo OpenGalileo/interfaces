@@ -61,7 +61,7 @@ uint8_t StarTracker::get_imu_temp(){
         std::cerr << "Failed temp read\n";
         return 0;
     }
-    return buf;
+    return buf[0];
 }
 
 std::array<float,3>  StarTracker::get_imu_euler(){
