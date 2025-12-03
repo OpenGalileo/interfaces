@@ -274,7 +274,7 @@ bool StarTracker::write_i2c(uint8_t *buf, size_t size, uint8_t addr){
         return false;
     }
     ssize_t byteWrite = write(file, buf, size);
-    if(addrWrite<0){
+    if(byteWrite<0){
         close(file);
         return false;
     }
