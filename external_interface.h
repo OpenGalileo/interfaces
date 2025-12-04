@@ -10,7 +10,8 @@ typedef enum : uint8_t{
     IDLE_PI_ON = 0x01,
     IMU_MEASURE = 0x02,
     LOST_MEASURE = 0x03,
-    FUSION_MEASURE = 0x04
+    FUSION_MEASURE = 0x04,
+    LOST_MEASURE_MOCK = 0x05
 } OP_MODE;
 
 class StarTracker{
