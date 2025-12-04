@@ -181,6 +181,18 @@ std::array<float,16>  StarTracker::get_imu_all(){
     return imu_all;
 }
 
+float StarTracker::get_imu_frequency(){
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x50);
+    if(!ret){
+        std::cerr << "Failed imu freq read\n";
+        return 0.0f;
+    }
+    float freq[1]; 
+    memcpy(&freq[0], buf, 4);
+    return freq[0];
+}
+
 uint8_t StarTracker::get_lost_valid(){
     uint8_t buf[1];
     bool ret = StarTracker::read_i2c(buf, 1, 0x30);
@@ -302,6 +314,19 @@ std::array<float, 7> StarTracker::get_lost_all(){
 
     return lost_all;
 }
+
+float StarTracker::get_lost_frequency(){
+    uint8_t buf[4];
+    bool ret = StarTracker::read_i2c(buf, 4, 0x54);
+    if(!ret){
+        std::cerr << "Failed lost freq read\n";
+        return 0.0f;
+    }
+    float freq[1]; 
+    memcpy(&freq[0], buf, 4);
+    return freq[0];
+}
+
 
 bool StarTracker::read_i2c(uint8_t *buf, size_t size, uint8_t addr){
     const char* device = "/dev/i2c-1";

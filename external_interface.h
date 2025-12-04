@@ -93,6 +93,8 @@ uint8_t get_imu_temp();
   std::array<float,3> get_imu_gyro();
   std::array<float,3> get_imu_mag();
 
+  float get_imu_frequency();
+
   //LOST stuff
   uint8_t get_lost_valid();
   float get_lost_ra(); 
@@ -103,6 +105,8 @@ uint8_t get_imu_temp();
   float get_lost_k();
   float get_lost_real(); 
   std::array<float,7> get_lost_all();
+
+  float get_lost_frequency();
 
 
   /*
