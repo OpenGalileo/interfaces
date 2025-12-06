@@ -1,7 +1,7 @@
 /*
 Updated by Sarah - 10/11/2025
 */
-#include "imu.hpp"
+#include "BoschImu.hpp"
 #include "stdio.h"
 
 uint8_t DEV_ADDR = BNO088_ADDR<<1;
@@ -81,44 +81,6 @@ int Bosch_Imu::imu_init(OperModes op_mode, PowerModes pwr_mode){
     return 0;
 }
 
-/*
-Init function for setting up IMU into a given mode
-Version for using different address
-*/
-//int Bosch_Imu::imu_init(OperModes op_mode, PowerModes pwr_mode, uint8_t alt_addr){
-//    DEV_ADDR = alt_addr<<1;
-//
-//    uint8_t buf[10] = {0};
-//    uint8_t read_addr = 0x00;
-//    // TODO: Left this as-is for now in case there's a specific reason.
-//    // If not, just uncomment the raw_read line and delete the Master_Trasnmit / Master_Receive lines
-//    // raw_read(read_addr, &buf[0], 1);
-//    HAL_I2C_Master_Transmit(hi2c, DEV_ADDR, &read_addr, 1, 1000 );
-//    HAL_I2C_Master_Receive(hi2c, DEV_ADDR, &buf[0], 1, 1000 );
-//    if(buf[0]!=0xA0){
-//        printf("Could not establish communication with device\n\r");
-//        return -1;
-//    }
-//
-//    //Configure power mode
-//    uint8_t tempPwrMode = (uint8_t)pwr_mode;
-//    raw_write(BNO055_PWR_MODE_ADDR, &tempPwrMode);
-//	// HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_PWR_MODE_ADDR, 1, &pwr_mode, 1, 1000);
-//
-//    // Add a bit of a delay for the system to start waking up
-//    HAL_Delay(50);
-//
-//    //Configure operating mode
-//    uint8_t tempOpMode = (uint8_t)op_mode;
-//    raw_write(BNO055_OPR_MODE_ADDR, &tempOpMode);
-//    // HAL_I2C_Mem_Write(hi2c, DEV_ADDR, BNO055_OPR_MODE_ADDR, 1, &op_mode, 1, 1000);
-//
-//    // Another delay to ensure sensors are waking up
-//    HAL_Delay(1000);
-//
-//    return 0;
-//}
-
 /**
  * Reads internal CPU temperature of the sensor.
  * IMU must be in a running operational mode to report a non zero value
@@ -176,7 +138,6 @@ void Bosch_Imu::readEuler(float* euler){
 //    euler[2] = (int16_t)(buf[4]|(buf[5]<<8))*scale;
 
     int16_t temp = buf[0] | (int16_t)(buf[1]<<8);
-    *euler = 1.3;
     euler[0] = (float)temp * scale;
 
     temp = buf[2] | ((int16_t)buf[3]<<8);
@@ -261,6 +222,114 @@ void Bosch_Imu::readGyroscope(float* gyro){
     gyro[2] = (float)temp * scale;
 }
 
+/**
+ * Reads the quaternion reported by the IMU
+ * The raw function reports the items back as int16_t instead of converting it to floats
+ */
+void Bosch_Imu::readQuaternionRaw(int16_t* quaternion){
+    uint8_t buf[8] = {0};
+    raw_read(BNO055_QUATERNION_DATA_W_LSB_ADDR, &buf[0], 8);
+
+    int16_t temp = buf[0] | ((int16_t)buf[1]<<8);
+    quaternion[0] = temp;
+
+    temp = buf[2] | ((int16_t)buf[3]<<8);
+    quaternion[1] = temp;
+
+    temp = buf[4] | ((int16_t)buf[5]<<8);
+    quaternion[2] = temp;
+
+    temp = buf[6] | ((int16_t)buf[7]<<8);
+    quaternion[3] = temp;
+}
+
+/**
+ * Reads the Euler Angles (Roll, pitch, yaw) reported by the IMU
+ * The raw function reports the items back as int16_t instead of converting it into a float
+ */
+void Bosch_Imu::readEulerRaw(int16_t* euler)
+{
+    // Generate the temp buffer to read
+    uint8_t buf[6] = {0};
+    // Read the data from the IMU
+    raw_read(BNO055_EULER_H_LSB_ADDR, &buf[0], 6);
+
+    // Start turning the data into 16 bit values
+    int16_t temp = buf[0] | (int16_t)(buf[1] << 8);
+    euler[0] = temp;
+    
+    temp = buf[2] | (int16_t)(buf[3] << 8);
+    euler[1] = temp;
+    
+    temp = buf[4] | (int16_t)(buf[5] << 8);
+    euler[2] = temp;
+}
+
+/**
+ * Reads the accelerometer data from the IMU.
+ * The raw function reports the items back as a int16_t instead of converting them into floats
+ */
+void Bosch_Imu::readAccelerometerRaw(int16_t* accel)
+{
+    // Generate the temp buffer to read
+    uint8_t buf[6] = {0};
+    // Read the data from the IMU
+    raw_read(BNO055_ACCEL_DATA_X_LSB_ADDR, &buf[0], 6);
+
+    // Start turning the data into 16 bit values
+    int16_t temp = buf[0] | (int16_t)(buf[1] << 8);
+    accel[0] = temp;
+    
+    temp = buf[2] | (int16_t)(buf[3] << 8);
+    accel[1] = temp;
+    
+    temp = buf[4] | (int16_t)(buf[5] << 8);
+    accel[2] = temp;
+}
+
+/**
+ * Reads the magnetometer data from the IMU.
+ * The raw function reports the items back as a int16_t instead of converting them into floats
+ */
+void Bosch_Imu::readMagnetometerRaw(int16_t* mag)
+{
+    // Generate the temp buffer to read
+    uint8_t buf[6] = {0};
+    // Read the data from the IMU
+    raw_read(BNO055_MAG_DATA_X_LSB_ADDR, &buf[0], 6);
+
+    // Start turning the data into 16 bit values
+    int16_t temp = buf[0] | (int16_t)(buf[1] << 8);
+    mag[0] = temp;
+    
+    temp = buf[2] | (int16_t)(buf[3] << 8);
+    mag[1] = temp;
+    
+    temp = buf[4] | (int16_t)(buf[5] << 8);
+    mag[2] = temp;
+}
+
+/**
+ * Reads the gyroscope data from the IMU.
+ * The raw function reports the items back as a int16_t instead of converting them into floats
+ */
+void Bosch_Imu::readGyroscopeRaw(int16_t* gyro)
+{
+    // Generate the temp buffer to read
+    uint8_t buf[6] = {0};
+    // Read the data from the IMU
+    raw_read(BNO055_GYRO_DATA_X_LSB_ADDR, &buf[0], 6);
+
+    // Start turning the data into 16 bit values
+    int16_t temp = buf[0] | (int16_t)(buf[1] << 8);
+    gyro[0] = temp;
+    
+    temp = buf[2] | (int16_t)(buf[3] << 8);
+    gyro[1] = temp;
+    
+    temp = buf[4] | (int16_t)(buf[5] << 8);
+    gyro[2] = temp;
+}
 
 /**
  * Sends the command to the IMU to put it into a suspend state.
