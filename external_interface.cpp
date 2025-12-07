@@ -1,7 +1,4 @@
-/*
-TODO: Decide if we want to only open and close the file once
-TODO: Fix imu functions to read floats
-*/
+
 
 
 #include "external_interface.h"
@@ -55,7 +52,7 @@ void StarTracker::lost_frequency(float freq){ //frequency should be between 0 an
 } 
 
 
-void StarTracker::select_image(uint8_t image_num){ //frequency should be between 0 and 0.5 Hz
+void StarTracker::select_image(uint8_t image_num){ //used for testing
     uint8_t buf[2] = {0x02, image_num};
     bool ret = StarTracker::write_i2c(buf, 2, 0x02);
     if(!ret){
